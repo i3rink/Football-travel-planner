@@ -443,7 +443,7 @@ document.getElementById('go-btn').addEventListener('click', async () => {
     document.getElementById('lt-time').textContent = fmtTime(leaveMins);
     document.getElementById('summary-rows').innerHTML = `
       <div class="sum-row"><span class="sum-label">Kick-off</span><span class="sum-val">${kickoffStr}</span></div>
-      <div class="sum-row"><span class="sum-label">Arrive by</span><span class="sum-val">${fmtTime(arrivalMins)} (${buffer} mins early)</span></div>
+      <div class="sum-row"><span class="sum-label">Arrive by</span><span class="sum-val">${arriveLabel}</span></div>
       <div class="sum-row"><span class="sum-label">Total journey</span><span class="sum-val">${totalMins} mins</span></div>`;
     const sb = document.getElementById('status-bar');
     sb.textContent = statusText;
