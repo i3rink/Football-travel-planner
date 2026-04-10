@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Football Travel Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --yellow: #f5c800;
+    --yellow-dark: #c9a200;
+    --yellow-light: #fffbe6;
+    --black: #111110;
+    --black-soft: #1e1e1c;
+    --amber: #b45309;
+    --amber-bg: #fef3c7;
+    --red: #b91c1c;
+    --red-bg: #fee2e2;
+    --bg: #f5f5f2;
+    --card: #ffffff;
+    --text: #111110;
+    --muted: #6b6b67;
+    --border: #e0e0db;
+    --radius: 10px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 3rem;
+  }
+
+  header {
+    background: var(--black);
+    color: var(--yellow);
+    padding: 1.5rem 1.25rem 1.25rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 140px; height: 140px;
+    border: 20px solid rgba(245,200,0,0.08);
+    border-radius: 50%;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 40%;
+    width: 100px; height: 100px;
+    border: 15px solid rgba(245,200,0,0.05);
+    border-radius: 50%;
+  }
+
+  .header-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(245,200,0,0.6);
+    margin-bottom: 4px;
+  }
+
+  header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    color: var(--yellow);
+  }
+
+  .container {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-top: 1rem;
+  }
+
+  .card-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .field { margin-bottom: 0.85rem; }
+  .field:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 5px;
+  }
+
+  input[type="text"],
+  input[type="time"],
+  input[type="number"] {
+    width: 100%;
+    padding: 9px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  input:focus { border-color: var(--yellow-dark); }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+    cursor: pointer;
+  }
+
+  .toggle-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--black);
+    cursor: pointer;
+  }
+
+  .toggle-row span {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .pickup-wrap {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+  }
+  .pickup-wrap.open { max-height: 300px; }
+
+  .btn {
+    width: 100%;
+    padding: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--yellow);
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn:hover { background: var(--yellow-dark); }
+  .btn:active { transform: scale(0.99); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .error {
+    font-size: 13px;
+    color: var(--red);
+    margin-top: 8px;
+    display: none;
+    padding: 8px 12px;
+    background: var(--red-bg);
+    border-radius: 6px;
+  }
+
+  .note {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  .results { display: none; }
+  .results.show { display: block; }
+
+  .leg {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+  }
+  .leg-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+  .leg-val { font-size: 15px; font-weight: 500; color: var(--text); }
+
+  .summary-rows { margin: 4px 0; }
+  .sum-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .sum-row:last-child { border-bottom: none; }
+  .sum-label { font-size: 13px; color: var(--muted); }
+  .sum-val { font-size: 14px; font-weight: 600; color: var(--text); }
+
+  .leave-time {
+    text-align: center;
+    padding: 1.25rem 1rem;
+    background: var(--black);
+    border-radius: var(--radius);
+    margin-top: 1rem;
+  }
+  .leave-time .lt-label { font-size: 12px; font-weight: 600; color: rgba(245,200,0,0.6); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+  .leave-time .lt-time { font-size: 58px; font-weight: 700; color: var(--yellow); line-height: 1; letter-spacing: -0.02em; }
+
+  .status {
+    text-align: center;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .status.good { background: var(--yellow-light); color: #7a6000; }
+  .status.tight { background: var(--amber-bg); color: var(--amber); }
+  .status.late { background: var(--red-bg); color: var(--red); }
+
+  .spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-top-color: var(--black);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 400px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .lt-time { font-size: 42px !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">Away Game Planner</div>
+  <h1>When do I need<br>to leave?</h1>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <div class="card-title">Journey details</div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Your postcode</label>
+        <input type="text" id="home" placeholder="e.g. KA3 1AA" />
+      </div>
+      <div class="field">
+        <label>Kick-off time</label>
+        <input type="time" id="kickoff" value="19:00" />
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Venue (name or postcode)</label>
+        <input type="text" id="venue" placeholder="e.g. Kilwinning Academy" />
+      </div>
+      <div class="field">
+        <label>Arrive early by (mins)</label>
+        <input type="number" id="buffer" value="30" min="5" max="120" />
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <label class="toggle-row" for="has-pickup">
+      <input type="checkbox" id="has-pickup" />
+      <span>Picking someone up en route?</span>
+    </label>
+    <div class="pickup-wrap" id="pickup-wrap">
+      <div class="grid-2" style="margin-bottom:0">
+        <div class="field">
+          <label>Their postcode or address</label>
+          <input type="text" id="pickup-addr" placeholder="e.g. KA12 8AB" />
+        </div>
+        <div class="field">
+          <label>Their name</label>
+          <input type="text" id="pickup-name" placeholder="e.g. Liam" />
+        </div>
+      </div>
+    </div>
+    <button class="btn" id="go-btn">Work out when to leave</button>
+    <div class="error" id="error"></div>
+    <p class="note">Uses free OpenStreetMap routing — no account needed. Times are estimates; add buffer for traffic.</p>
+  </div>
+
+  <div class="results" id="results">
+    <div class="card">
+      <div class="card-title">Route breakdown</div>
+      <div id="legs"></div>
+    </div>
+    <div class="leave-time">
+      <div class="lt-label">Leave home by</div>
+      <div class="lt-time" id="lt-time">--:--</div>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <div class="summary-rows" id="summary-rows"></div>
+    </div>
+    <div class="status" id="status-bar"></div>
+  </div>
+
+</div>
+
+<script>
+document.getElementById('has-pickup').addEventListener('change', function() {
+  document.getElementById('pickup-wrap').classList.toggle('open', this.checked);
+});
+
+function fmtTime(mins) {
+  mins = ((Math.round(mins) % 1440) + 1440) % 1440;
+  return String(Math.floor(mins / 60)).padStart(2, '0') + ':' + String(mins % 60).padStart(2, '0');
+}
+
+async function geocode(query) {
+  const q = /^[A-Z]{1,2}\d{1,2}[A-Z]?\s*\d[A-Z]{2}$/i.test(query.trim())
+    ? query.trim() + ', UK'
+    : query.trim() + ', Scotland, UK';
+  const url = 'https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(q) + '&format=json&limit=1';
+  const r = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+  const d = await r.json();
+  if (!d.length) throw new Error('Couldn\'t find "' + query + '" — try a full postcode instead');
+  return { lat: parseFloat(d[0].lat), lon: parseFloat(d[0].lon), name: d[0].display_name.split(',')[0] };
+}
+
+async function routeTime(from, to) {
+  const url = 'https://router.project-osrm.org/route/v1/driving/' + from.lon + ',' + from.lat + ';' + to.lon + ',' + to.lat + '?overview=false';
+  const r = await fetch(url);
+  const d = await r.json();
+  if (d.code !== 'Ok') throw new Error('Could not calculate route between those locations');
+  return {
+    mins: Math.round(d.routes[0].duration / 60),
+    miles: (d.routes[0].distance / 1609.34).toFixed(1)
+  };
+}
+
+document.getElementById('go-btn').addEventListener('click', async () => {
+  const home = document.getElementById('home').value.trim();
+  const venue = document.getElementById('venue').value.trim();
+  const kickoffStr = document.getElementById('kickoff').value;
+  const buffer = parseInt(document.getElementById('buffer').value) || 30;
+  const hasPickup = document.getElementById('has-pickup').checked;
+  const pickupAddr = document.getElementById('pickup-addr').value.trim();
+  const pickupName = document.getElementById('pickup-name').value.trim() || 'teammate';
+
+  const errEl = document.getElementById('error');
+  errEl.style.display = 'none';
+
+  if (!home || !venue) {
+    errEl.textContent = 'Enter your postcode and the venue.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (hasPickup && !pickupAddr) {
+    errEl.textContent = 'Add a postcode or address for the pickup.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('go-btn');
+  btn.innerHTML = '<span class="spinner"></span>Calculating...';
+  btn.disabled = true;
+  document.getElementById('results').classList.remove('show');
+
+  try {
+    const [hCoord, vCoord] = await Promise.all([geocode(home), geocode(venue)]);
+    const [koH, koM] = kickoffStr.split(':').map(Number);
+    const kickoffMins = koH * 60 + koM;
+    const arrivalMins = kickoffMins - buffer;
+
+    let legsHtml = '';
+    let totalMins = 0;
+
+    if (hasPickup) {
+      const pCoord = await geocode(pickupAddr);
+      const [leg1, leg2] = await Promise.all([routeTime(hCoord, pCoord), routeTime(pCoord, vCoord)]);
+      totalMins = leg1.mins + 5 + leg2.mins;
+      legsHtml = `
+        <div class="leg"><div class="leg-label">Leg 1 — Home to ${pickupName}</div><div class="leg-val">${leg1.mins} mins &nbsp;·&nbsp; ${leg1.miles} miles</div></div>
+        <div class="leg"><div class="leg-label">Pickup stop (${pickupName})</div><div class="leg-val">+5 mins</div></div>
+        <div class="leg"><div class="leg-label">Leg 2 — ${pickupName} to ${vCoord.name}</div><div class="leg-val">${leg2.mins} mins &nbsp;·&nbsp; ${leg2.miles} miles</div></div>`;
+    } else {
+      const leg1 = await routeTime(hCoord, vCoord);
+      totalMins = leg1.mins;
+      legsHtml = `<div class="leg"><div class="leg-label">Home → ${vCoord.name}</div><div class="leg-val">${leg1.mins} mins &nbsp;·&nbsp; ${leg1.miles} miles</div></div>`;
+    }
+
+    const leaveMins = arrivalMins - totalMins;
+    const nowMins = new Date().getHours() * 60 + new Date().getMinutes();
+    const gap = Math.round(leaveMins - nowMins);
+
+    let statusClass, statusText;
+    if (gap < 0) {
+      statusClass = 'late';
+      statusText = 'You should have left ' + Math.abs(gap) + ' minutes ago — get moving!';
+    } else if (gap < 20) {
+      statusClass = 'tight';
+      statusText = 'Tight — leave in ' + gap + ' minutes';
+    } else {
+      statusClass = 'good';
+      statusText = 'You have ' + gap + ' minutes before you need to leave';
+    }
+
+    document.getElementById('legs').innerHTML = legsHtml;
+    document.getElementById('lt-time').textContent = fmtTime(leaveMins);
+    document.getElementById('summary-rows').innerHTML = `
+      <div class="sum-row"><span class="sum-label">Kick-off</span><span class="sum-val">${kickoffStr}</span></div>
+      <div class="sum-row"><span class="sum-label">Arrive by</span><span class="sum-val">${fmtTime(arrivalMins)} (${buffer} mins early)</span></div>
+      <div class="sum-row"><span class="sum-label">Total journey</span><span class="sum-val">${totalMins} mins</span></div>`;
+    const sb = document.getElementById('status-bar');
+    sb.textContent = statusText;
+    sb.className = 'status ' + statusClass;
+    document.getElementById('results').classList.add('show');
+
+  } catch (e) {
+    errEl.textContent = e.message;
+    errEl.style.display = 'block';
+  }
+
+  btn.innerHTML = 'Work out when to leave';
+  btn.disabled = false;
+});
+</script>
+</body>
+</html>
