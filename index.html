@@ -412,7 +412,7 @@ document.getElementById('go-btn').addEventListener('click', async () => {
       totalMins = leg1.mins + 5 + leg2.mins;
       const leaveMinsEst = arrivalMins - totalMins;
       const pickupArrivalMins = leaveMinsEst + leg1.mins;
-      const readyByMins = pickupArrivalMins - 2;
+      const readyByMins = Math.round((pickupArrivalMins - 2) / 5) * 5;
       legsHtml = `
         <div class="leg"><div class="leg-label">Home to ${pickupName}</div><div class="leg-val">${leg1.mins} mins &nbsp;·&nbsp; ${leg1.miles} miles</div></div>
         <div class="leg pickup-callout"><div class="leg-label">Tell ${pickupName} to be ready at the door by</div><div class="leg-val ready-time">${fmtTime(readyByMins)}</div></div>
