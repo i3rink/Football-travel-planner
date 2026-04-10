@@ -209,6 +209,9 @@
   }
   .leg-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
   .leg-val { font-size: 15px; font-weight: 500; color: var(--text); }
+  .pickup-callout { background: var(--black); border-color: var(--black); }
+  .pickup-callout .leg-label { color: rgba(245,200,0,0.6); }
+  .pickup-callout .ready-time { font-size: 28px; font-weight: 700; color: var(--yellow); letter-spacing: -0.01em; }
 
   .summary-rows { margin: 4px 0; }
   .sum-row {
@@ -314,12 +317,12 @@
     </div>
     <button class="btn" id="go-btn">Work out when to leave</button>
     <div class="error" id="error"></div>
-    <p class="note">Uses free OpenStreetMap routing — no account needed. Times are estimates; add buffer for traffic.</p>
+    <p class="note">Times are estimates and cannot account for real-time traffic data.</p>
   </div>
 
   <div class="results" id="results">
     <div class="card">
-      <div class="card-title">Route breakdown</div>
+      <div class="card-title">Your journey</div>
       <div id="legs"></div>
     </div>
     <div class="leave-time">
@@ -407,10 +410,13 @@ document.getElementById('go-btn').addEventListener('click', async () => {
       const pCoord = await geocode(pickupAddr);
       const [leg1, leg2] = await Promise.all([routeTime(hCoord, pCoord), routeTime(pCoord, vCoord)]);
       totalMins = leg1.mins + 5 + leg2.mins;
+      const leaveMinsEst = arrivalMins - totalMins;
+      const pickupArrivalMins = leaveMinsEst + leg1.mins;
+      const readyByMins = pickupArrivalMins - 2;
       legsHtml = `
-        <div class="leg"><div class="leg-label">Leg 1 — Home to ${pickupName}</div><div class="leg-val">${leg1.mins} mins &nbsp;·&nbsp; ${leg1.miles} miles</div></div>
-        <div class="leg"><div class="leg-label">Pickup stop (${pickupName})</div><div class="leg-val">+5 mins</div></div>
-        <div class="leg"><div class="leg-label">Leg 2 — ${pickupName} to ${vCoord.name}</div><div class="leg-val">${leg2.mins} mins &nbsp;·&nbsp; ${leg2.miles} miles</div></div>`;
+        <div class="leg"><div class="leg-label">Home to ${pickupName}</div><div class="leg-val">${leg1.mins} mins &nbsp;·&nbsp; ${leg1.miles} miles</div></div>
+        <div class="leg pickup-callout"><div class="leg-label">Tell ${pickupName} to be ready at the door by</div><div class="leg-val ready-time">${fmtTime(readyByMins)}</div></div>
+        <div class="leg"><div class="leg-label">${pickupName} to ${vCoord.name}</div><div class="leg-val">${leg2.mins} mins &nbsp;·&nbsp; ${leg2.miles} miles</div></div>`;
     } else {
       const leg1 = await routeTime(hCoord, vCoord);
       totalMins = leg1.mins;
