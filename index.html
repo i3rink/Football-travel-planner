@@ -441,6 +441,7 @@ document.getElementById('go-btn').addEventListener('click', async () => {
 
     document.getElementById('legs').innerHTML = legsHtml;
     document.getElementById('lt-time').textContent = fmtTime(leaveMins);
+    const arriveLabel = buffer > 0 ? `${fmtTime(arrivalMins)} (${buffer} mins early)` : fmtTime(arrivalMins);
     document.getElementById('summary-rows').innerHTML = `
       <div class="sum-row"><span class="sum-label">Kick-off</span><span class="sum-val">${kickoffStr}</span></div>
       <div class="sum-row"><span class="sum-label">Arrive by</span><span class="sum-val">${arriveLabel}</span></div>
@@ -461,5 +462,4 @@ document.getElementById('go-btn').addEventListener('click', async () => {
 </script>
 </body>
 </html>
-
 
