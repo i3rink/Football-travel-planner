@@ -13,7 +13,6 @@
     --yellow-dark: #c9a200;
     --yellow-light: #fffbe6;
     --black: #111110;
-    --black-soft: #1e1e1c;
     --amber: #b45309;
     --amber-bg: #fef3c7;
     --red: #b91c1c;
@@ -207,6 +206,7 @@
     padding: 10px 14px;
     margin-bottom: 8px;
   }
+  .leg:last-child { margin-bottom: 0; }
   .leg-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
   .leg-val { font-size: 15px; font-weight: 500; color: var(--text); }
   .pickup-callout { background: var(--black); border-color: var(--black); }
@@ -261,7 +261,7 @@
 
   @media (max-width: 400px) {
     .grid-2 { grid-template-columns: 1fr; }
-    .lt-time { font-size: 42px !important; }
+    .leave-time .lt-time { font-size: 42px; }
   }
 </style>
 </head>
@@ -293,7 +293,7 @@
       </div>
       <div class="field">
         <label>Arrive early by (mins)</label>
-        <input type="number" id="buffer" value="30" min="5" max="120" />
+        <input type="number" id="buffer" value="30" min="0" max="120" />
       </div>
     </div>
   </div>
@@ -348,20 +348,20 @@ function fmtTime(mins) {
 }
 
 async function geocode(query) {
-  const q = /^[A-Z]{1,2}\d{1,2}[A-Z]?\s*\d[A-Z]{2}$/i.test(query.trim())
+  var q = /^[A-Z]{1,2}\d{1,2}[A-Z]?\s*\d[A-Z]{2}$/i.test(query.trim())
     ? query.trim() + ', UK'
     : query.trim() + ', Scotland, UK';
-  const url = 'https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(q) + '&format=json&limit=1';
-  const r = await fetch(url, { headers: { 'Accept-Language': 'en' } });
-  const d = await r.json();
+  var url = 'https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(q) + '&format=json&limit=1';
+  var r = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+  var d = await r.json();
   if (!d.length) throw new Error('Couldn\'t find "' + query + '" — try a full postcode instead');
   return { lat: parseFloat(d[0].lat), lon: parseFloat(d[0].lon), name: d[0].display_name.split(',')[0] };
 }
 
 async function routeTime(from, to) {
-  const url = 'https://router.project-osrm.org/route/v1/driving/' + from.lon + ',' + from.lat + ';' + to.lon + ',' + to.lat + '?overview=false';
-  const r = await fetch(url);
-  const d = await r.json();
+  var url = 'https://router.project-osrm.org/route/v1/driving/' + from.lon + ',' + from.lat + ';' + to.lon + ',' + to.lat + '?overview=false';
+  var r = await fetch(url);
+  var d = await r.json();
   if (d.code !== 'Ok') throw new Error('Could not calculate route between those locations');
   return {
     mins: Math.round(d.routes[0].duration / 60),
@@ -369,16 +369,18 @@ async function routeTime(from, to) {
   };
 }
 
-document.getElementById('go-btn').addEventListener('click', async () => {
-  const home = document.getElementById('home').value.trim();
-  const venue = document.getElementById('venue').value.trim();
-  const kickoffStr = document.getElementById('kickoff').value;
-  const buffer = parseInt(document.getElementById('buffer').value) || 30;
-  const hasPickup = document.getElementById('has-pickup').checked;
-  const pickupAddr = document.getElementById('pickup-addr').value.trim();
-  const pickupName = document.getElementById('pickup-name').value.trim() || 'teammate';
+document.getElementById('go-btn').addEventListener('click', async function() {
+  var home = document.getElementById('home').value.trim();
+  var venue = document.getElementById('venue').value.trim();
+  var kickoffStr = document.getElementById('kickoff').value;
+  var hasPickup = document.getElementById('has-pickup').checked;
+  var pickupAddr = document.getElementById('pickup-addr').value.trim();
+  var pickupName = document.getElementById('pickup-name').value.trim() || 'teammate';
 
-  const errEl = document.getElementById('error');
+  var rawBuffer = parseInt(document.getElementById('buffer').value);
+  var buffer = isNaN(rawBuffer) ? 30 : rawBuffer;
+
+  var errEl = document.getElementById('error');
   errEl.style.display = 'none';
 
   if (!home || !venue) {
@@ -392,42 +394,47 @@ document.getElementById('go-btn').addEventListener('click', async () => {
     return;
   }
 
-  const btn = document.getElementById('go-btn');
+  var btn = document.getElementById('go-btn');
   btn.innerHTML = '<span class="spinner"></span>Calculating...';
   btn.disabled = true;
   document.getElementById('results').classList.remove('show');
 
   try {
-    const [hCoord, vCoord] = await Promise.all([geocode(home), geocode(venue)]);
-    const [koH, koM] = kickoffStr.split(':').map(Number);
-    const kickoffMins = koH * 60 + koM;
-    const arrivalMins = kickoffMins - buffer;
+    var coords = await Promise.all([geocode(home), geocode(venue)]);
+    var hCoord = coords[0];
+    var vCoord = coords[1];
+    var kickParts = kickoffStr.split(':').map(Number);
+    var kickoffMins = kickParts[0] * 60 + kickParts[1];
+    var arrivalMins = kickoffMins - buffer;
 
-    let legsHtml = '';
-    let totalMins = 0;
+    var legsHtml = '';
+    var totalMins = 0;
 
     if (hasPickup) {
-      const pCoord = await geocode(pickupAddr);
-      const [leg1, leg2] = await Promise.all([routeTime(hCoord, pCoord), routeTime(pCoord, vCoord)]);
+      var pCoord = await geocode(pickupAddr);
+      var routes = await Promise.all([routeTime(hCoord, pCoord), routeTime(pCoord, vCoord)]);
+      var leg1 = routes[0];
+      var leg2 = routes[1];
       totalMins = leg1.mins + 5 + leg2.mins;
-      const leaveMinsEst = arrivalMins - totalMins;
-      const pickupArrivalMins = leaveMinsEst + leg1.mins;
-      const readyByMins = Math.round((pickupArrivalMins - 2) / 5) * 5;
-      legsHtml = `
-        <div class="leg"><div class="leg-label">Home to ${pickupName}</div><div class="leg-val">${leg1.mins} mins &nbsp;·&nbsp; ${leg1.miles} miles</div></div>
-        <div class="leg pickup-callout"><div class="leg-label">Tell ${pickupName} to be ready at the door by</div><div class="leg-val ready-time">${fmtTime(readyByMins)}</div></div>
-        <div class="leg"><div class="leg-label">${pickupName} to ${vCoord.name}</div><div class="leg-val">${leg2.mins} mins &nbsp;·&nbsp; ${leg2.miles} miles</div></div>`;
+      var leaveMinsEst = arrivalMins - totalMins;
+      var pickupArrivalMins = leaveMinsEst + leg1.mins;
+      var readyByMins = Math.round((pickupArrivalMins - 2) / 5) * 5;
+      legsHtml =
+        '<div class="leg"><div class="leg-label">Home to ' + pickupName + '</div><div class="leg-val">' + leg1.mins + ' mins &nbsp;&middot;&nbsp; ' + leg1.miles + ' miles</div></div>' +
+        '<div class="leg pickup-callout"><div class="leg-label">Tell ' + pickupName + ' to be ready at the door by</div><div class="leg-val ready-time">' + fmtTime(readyByMins) + '</div></div>' +
+        '<div class="leg"><div class="leg-label">' + pickupName + ' to ' + vCoord.name + '</div><div class="leg-val">' + leg2.mins + ' mins &nbsp;&middot;&nbsp; ' + leg2.miles + ' miles</div></div>';
     } else {
-      const leg1 = await routeTime(hCoord, vCoord);
+      var leg1 = await routeTime(hCoord, vCoord);
       totalMins = leg1.mins;
-      legsHtml = `<div class="leg"><div class="leg-label">Home → ${vCoord.name}</div><div class="leg-val">${leg1.mins} mins &nbsp;·&nbsp; ${leg1.miles} miles</div></div>`;
+      legsHtml = '<div class="leg"><div class="leg-label">Home to ' + vCoord.name + '</div><div class="leg-val">' + leg1.mins + ' mins &nbsp;&middot;&nbsp; ' + leg1.miles + ' miles</div></div>';
     }
 
-    const leaveMins = arrivalMins - totalMins;
-    const nowMins = new Date().getHours() * 60 + new Date().getMinutes();
-    const gap = Math.round(leaveMins - nowMins);
+    var leaveMins = arrivalMins - totalMins;
+    var now = new Date();
+    var nowMins = now.getHours() * 60 + now.getMinutes();
+    var gap = Math.round(leaveMins - nowMins);
 
-    let statusClass, statusText;
+    var statusClass, statusText;
     if (gap < 0) {
       statusClass = 'late';
       statusText = 'You should have left ' + Math.abs(gap) + ' minutes ago — get moving!';
@@ -439,19 +446,21 @@ document.getElementById('go-btn').addEventListener('click', async () => {
       statusText = 'You have ' + gap + ' minutes before you need to leave';
     }
 
+    var arriveLabel = buffer > 0 ? fmtTime(arrivalMins) + ' (' + buffer + ' mins early)' : fmtTime(arrivalMins);
+
     document.getElementById('legs').innerHTML = legsHtml;
     document.getElementById('lt-time').textContent = fmtTime(leaveMins);
-    const arriveLabel = buffer > 0 ? `${fmtTime(arrivalMins)} (${buffer} mins early)` : fmtTime(arrivalMins);
-    document.getElementById('summary-rows').innerHTML = `
-      <div class="sum-row"><span class="sum-label">Kick-off</span><span class="sum-val">${kickoffStr}</span></div>
-      <div class="sum-row"><span class="sum-label">Arrive by</span><span class="sum-val">${arriveLabel}</span></div>
-      <div class="sum-row"><span class="sum-label">Total journey</span><span class="sum-val">${totalMins} mins</span></div>`;
-    const sb = document.getElementById('status-bar');
+    document.getElementById('summary-rows').innerHTML =
+      '<div class="sum-row"><span class="sum-label">Kick-off</span><span class="sum-val">' + kickoffStr + '</span></div>' +
+      '<div class="sum-row"><span class="sum-label">Arrive by</span><span class="sum-val">' + arriveLabel + '</span></div>' +
+      '<div class="sum-row"><span class="sum-label">Total journey</span><span class="sum-val">' + totalMins + ' mins</span></div>';
+
+    var sb = document.getElementById('status-bar');
     sb.textContent = statusText;
     sb.className = 'status ' + statusClass;
     document.getElementById('results').classList.add('show');
 
-  } catch (e) {
+  } catch(e) {
     errEl.textContent = e.message;
     errEl.style.display = 'block';
   }
@@ -462,4 +471,3 @@ document.getElementById('go-btn').addEventListener('click', async () => {
 </script>
 </body>
 </html>
-
