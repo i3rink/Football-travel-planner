@@ -108,4 +108,526 @@
     display: block;
     font-size: 12px;
     font-weight: 600;
-    color:
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 5px;
+  }
+
+  input[type="text"],
+  input[type="time"],
+  input[type="number"] {
+    width: 100%;
+    padding: 9px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  input:focus { border-color: var(--yellow-dark); }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+    cursor: pointer;
+  }
+
+  .toggle-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--black);
+    cursor: pointer;
+  }
+
+  .toggle-row span {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .pickup-wrap {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+  }
+  .pickup-wrap.open { max-height: 300px; }
+
+  .btn {
+    width: 100%;
+    padding: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--yellow);
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn:hover { background: var(--yellow-dark); }
+  .btn:active { transform: scale(0.99); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-secondary {
+    width: 100%;
+    padding: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn-secondary:hover { background: var(--bg); color: var(--text); }
+
+  .error {
+    font-size: 13px;
+    color: var(--red);
+    margin-top: 8px;
+    display: none;
+    padding: 8px 12px;
+    background: var(--red-bg);
+    border-radius: 6px;
+  }
+
+  .note {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  .results { display: none; }
+  .results.show { display: block; }
+
+  .leg {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+  }
+  .leg:last-child { margin-bottom: 0; }
+  .leg-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+  .leg-val { font-size: 15px; font-weight: 500; color: var(--text); }
+  .pickup-callout { background: var(--black); border-color: var(--black); }
+  .pickup-callout .leg-label { color: rgba(245,200,0,0.6); }
+  .pickup-callout .ready-time { font-size: 28px; font-weight: 700; color: var(--yellow); letter-spacing: -0.01em; }
+
+  .summary-rows { margin: 4px 0; }
+  .sum-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .sum-row:last-child { border-bottom: none; }
+  .sum-label { font-size: 13px; color: var(--muted); }
+  .sum-val { font-size: 14px; font-weight: 600; color: var(--text); }
+
+  .leave-time {
+    text-align: center;
+    padding: 1.25rem 1rem;
+    background: var(--black);
+    border-radius: var(--radius);
+    margin-top: 1rem;
+  }
+  .leave-time .lt-label { font-size: 12px; font-weight: 600; color: rgba(245,200,0,0.6); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+  .leave-time .lt-time { font-size: 58px; font-weight: 700; color: var(--yellow); line-height: 1; letter-spacing: -0.02em; }
+
+  /* Countdown */
+  .countdown-wrap {
+    margin-top: 12px;
+    text-align: center;
+  }
+  .countdown-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(245,200,0,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+  .countdown-display {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--yellow);
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .countdown-display.urgent { color: #ff6b6b; }
+  .countdown-display.gone { color: #ff6b6b; }
+
+  .status {
+    text-align: center;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .status.good { background: var(--yellow-light); color: #7a6000; }
+  .status.tight { background: var(--amber-bg); color: var(--amber); }
+  .status.late { background: var(--red-bg); color: var(--red); }
+
+  .spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-top-color: var(--black);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 400px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .leave-time .lt-time { font-size: 42px; }
+    .countdown-display { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">Travel Planner</div>
+  <h1>When do I need<br>to leave?</h1>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <div class="card-title">Journey details</div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Your postcode</label>
+        <input type="text" id="home" placeholder="e.g. KA3 1AA" />
+      </div>
+      <div class="field">
+        <label>Departure time</label>
+        <input type="time" id="departure" value="19:00" />
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Destination (name or postcode)</label>
+        <input type="text" id="venue" placeholder="e.g. Kilwinning Academy" />
+      </div>
+      <div class="field">
+        <label>Arrive early by (mins)</label>
+        <input type="number" id="buffer" value="30" min="0" max="120" />
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <label class="toggle-row" for="has-pickup">
+      <input type="checkbox" id="has-pickup" />
+      <span>Picking someone up en route?</span>
+    </label>
+    <div class="pickup-wrap" id="pickup-wrap">
+      <div class="grid-2" style="margin-bottom:0">
+        <div class="field">
+          <label>Their postcode or address</label>
+          <input type="text" id="pickup-addr" placeholder="e.g. KA12 8AB" />
+        </div>
+        <div class="field">
+          <label>Their name</label>
+          <input type="text" id="pickup-name" placeholder="e.g. Liam" />
+        </div>
+      </div>
+    </div>
+    <button class="btn" id="go-btn">Work out when to leave</button>
+    <div class="error" id="error"></div>
+    <p class="note">Times are estimates and cannot account for real-time traffic data.</p>
+  </div>
+
+  <div class="results" id="results">
+    <div class="card">
+      <div class="card-title">Your journey</div>
+      <div id="legs"></div>
+    </div>
+    <div class="leave-time">
+      <div class="lt-label">Leave home by</div>
+      <div class="lt-time" id="lt-time">--:--</div>
+      <div class="countdown-wrap">
+        <div class="countdown-label">Time until departure</div>
+        <div class="countdown-display" id="countdown">--:--:--</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <div class="summary-rows" id="summary-rows"></div>
+    </div>
+    <div class="status" id="status-bar"></div>
+    <button class="btn-secondary" id="clear-btn">Clear saved journey</button>
+  </div>
+
+</div>
+
+<script>
+  // ── Storage helpers (safe, won't crash on corrupt data) ──────────────────
+  var STORAGE_KEY = 'travel_planner_v1';
+
+  function saveState() {
+    try {
+      var state = {
+        home:       document.getElementById('home').value,
+        venue:      document.getElementById('venue').value,
+        departure:  document.getElementById('departure').value,
+        buffer:     document.getElementById('buffer').value,
+        hasPickup:  document.getElementById('has-pickup').checked,
+        pickupAddr: document.getElementById('pickup-addr').value,
+        pickupName: document.getElementById('pickup-name').value
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch(e) { /* storage unavailable — silently ignore */ }
+  }
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      var state = JSON.parse(raw);
+      if (state.home)       document.getElementById('home').value        = state.home;
+      if (state.venue)      document.getElementById('venue').value       = state.venue;
+      if (state.departure)  document.getElementById('departure').value   = state.departure;
+      if (state.buffer !== undefined) document.getElementById('buffer').value = state.buffer;
+      if (state.hasPickup) {
+        document.getElementById('has-pickup').checked = true;
+        document.getElementById('pickup-wrap').classList.add('open');
+      }
+      if (state.pickupAddr) document.getElementById('pickup-addr').value = state.pickupAddr;
+      if (state.pickupName) document.getElementById('pickup-name').value = state.pickupName;
+    } catch(e) {
+      // Corrupt data — clear it and start fresh without crashing
+      try { localStorage.removeItem(STORAGE_KEY); } catch(e2) {}
+    }
+  }
+
+  // Save inputs whenever they change
+  ['home','venue','departure','buffer','pickup-addr','pickup-name'].forEach(function(id) {
+    document.getElementById(id).addEventListener('input', saveState);
+  });
+  document.getElementById('has-pickup').addEventListener('change', saveState);
+
+  // ── Pickup toggle ────────────────────────────────────────────────────────
+  document.getElementById('has-pickup').addEventListener('change', function() {
+    document.getElementById('pickup-wrap').classList.toggle('open', this.checked);
+  });
+
+  // ── Clear saved journey ──────────────────────────────────────────────────
+  document.getElementById('clear-btn').addEventListener('click', function() {
+    try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+    document.getElementById('home').value        = '';
+    document.getElementById('venue').value       = '';
+    document.getElementById('departure').value   = '19:00';
+    document.getElementById('buffer').value      = '30';
+    document.getElementById('has-pickup').checked = false;
+    document.getElementById('pickup-wrap').classList.remove('open');
+    document.getElementById('pickup-addr').value = '';
+    document.getElementById('pickup-name').value = '';
+    document.getElementById('results').classList.remove('show');
+    clearInterval(countdownTimer);
+  });
+
+  // ── Countdown timer ──────────────────────────────────────────────────────
+  var countdownTimer = null;
+  var leaveAtMins = null; // the calculated leave time in mins-since-midnight
+
+  function updateCountdown() {
+    if (leaveAtMins === null) return;
+    var now = new Date();
+    var nowSecs = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    var leaveSecs = leaveAtMins * 60;
+    var diff = leaveSecs - nowSecs;
+
+    var el = document.getElementById('countdown');
+    el.className = 'countdown-display';
+
+    if (diff <= 0) {
+      // Already past leave time — show how long ago
+      var ago = Math.abs(diff);
+      var h = Math.floor(ago / 3600);
+      var m = Math.floor((ago % 3600) / 60);
+      var s = ago % 60;
+      var txt = (h > 0 ? pad(h) + ':' : '') + pad(m) + ':' + pad(s);
+      el.textContent = '−' + txt + ' ago';
+      el.classList.add('gone');
+    } else {
+      var h = Math.floor(diff / 3600);
+      var m = Math.floor((diff % 3600) / 60);
+      var s = diff % 60;
+      el.textContent = (h > 0 ? pad(h) + ':' : '') + pad(m) + ':' + pad(s);
+      if (diff < 1200) el.classList.add('urgent'); // under 20 mins
+    }
+  }
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  // ── Helpers ──────────────────────────────────────────────────────────────
+  function fmtTime(mins) {
+    mins = ((Math.round(mins) % 1440) + 1440) % 1440;
+    return pad(Math.floor(mins / 60)) + ':' + pad(mins % 60);
+  }
+
+  async function geocode(query) {
+    var q = /^[A-Z]{1,2}\d{1,2}[A-Z]?\s*\d[A-Z]{2}$/i.test(query.trim())
+      ? query.trim() + ', UK'
+      : query.trim() + ', Scotland, UK';
+    var url = 'https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(q) + '&format=json&limit=1';
+    var r = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+    var d = await r.json();
+    if (!d.length) throw new Error('Couldn\'t find "' + query + '" — try a full postcode instead');
+    return { lat: parseFloat(d[0].lat), lon: parseFloat(d[0].lon), name: d[0].display_name.split(',')[0] };
+  }
+
+  async function routeTime(from, to) {
+    var url = 'https://router.project-osrm.org/route/v1/driving/'
+      + from.lon + ',' + from.lat + ';'
+      + to.lon   + ',' + to.lat
+      + '?overview=false';
+    var r = await fetch(url);
+    var d = await r.json();
+    if (d.code !== 'Ok') throw new Error('Could not calculate route between those locations');
+    return {
+      mins:  Math.round(d.routes[0].duration / 60),
+      miles: (d.routes[0].distance / 1609.34).toFixed(1)
+    };
+  }
+
+  // ── Main calculate ───────────────────────────────────────────────────────
+  document.getElementById('go-btn').addEventListener('click', async function() {
+    var home        = document.getElementById('home').value.trim();
+    var venue       = document.getElementById('venue').value.trim();
+    var depStr      = document.getElementById('departure').value;
+    var hasPickup   = document.getElementById('has-pickup').checked;
+    var pickupAddr  = document.getElementById('pickup-addr').value.trim();
+    var pickupName  = document.getElementById('pickup-name').value.trim() || 'passenger';
+    var rawBuffer   = parseInt(document.getElementById('buffer').value);
+    var buffer      = isNaN(rawBuffer) ? 30 : rawBuffer;
+
+    var errEl = document.getElementById('error');
+    errEl.style.display = 'none';
+
+    if (!home || !venue) {
+      errEl.textContent = 'Enter your postcode and the destination.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (hasPickup && !pickupAddr) {
+      errEl.textContent = 'Add a postcode or address for the pickup.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    var btn = document.getElementById('go-btn');
+    btn.innerHTML = '<span class="spinner"></span>Calculating...';
+    btn.disabled = true;
+    document.getElementById('results').classList.remove('show');
+    clearInterval(countdownTimer);
+    leaveAtMins = null;
+
+    try {
+      var coords  = await Promise.all([geocode(home), geocode(venue)]);
+      var hCoord  = coords[0];
+      var vCoord  = coords[1];
+      var depParts   = depStr.split(':').map(Number);
+      var depMins    = depParts[0] * 60 + depParts[1];
+      var arrivalMins = depMins - buffer;
+
+      var legsHtml = '';
+      var totalMins = 0;
+
+      if (hasPickup) {
+        var pCoord = await geocode(pickupAddr);
+        var routes = await Promise.all([routeTime(hCoord, pCoord), routeTime(pCoord, vCoord)]);
+        var leg1 = routes[0], leg2 = routes[1];
+        totalMins = leg1.mins + 5 + leg2.mins;
+        var leaveMinsEst     = arrivalMins - totalMins;
+        var pickupArrivalMins = leaveMinsEst + leg1.mins;
+        var readyByMins       = Math.round((pickupArrivalMins - 2) / 5) * 5;
+        legsHtml =
+          '<div class="leg"><div class="leg-label">Home to ' + pickupName + '</div><div class="leg-val">' + leg1.mins + ' mins &nbsp;&middot;&nbsp; ' + leg1.miles + ' miles</div></div>' +
+          '<div class="leg pickup-callout"><div class="leg-label">Tell ' + pickupName + ' to be ready at the door by</div><div class="leg-val ready-time">' + fmtTime(readyByMins) + '</div></div>' +
+          '<div class="leg"><div class="leg-label">' + pickupName + ' to ' + vCoord.name + '</div><div class="leg-val">' + leg2.mins + ' mins &nbsp;&middot;&nbsp; ' + leg2.miles + ' miles</div></div>';
+      } else {
+        var leg1 = await routeTime(hCoord, vCoord);
+        totalMins = leg1.mins;
+        legsHtml = '<div class="leg"><div class="leg-label">Home to ' + vCoord.name + '</div><div class="leg-val">' + leg1.mins + ' mins &nbsp;&middot;&nbsp; ' + leg1.miles + ' miles</div></div>';
+      }
+
+      var leaveMins = arrivalMins - totalMins;
+      leaveAtMins   = leaveMins; // store globally for countdown
+
+      var now     = new Date();
+      var nowMins = now.getHours() * 60 + now.getMinutes();
+      var gap     = Math.round(leaveMins - nowMins);
+
+      var statusClass, statusText;
+      if (gap < 0) {
+        statusClass = 'late';
+        statusText  = 'You should have left ' + Math.abs(gap) + ' minutes ago — get moving!';
+      } else if (gap < 20) {
+        statusClass = 'tight';
+        statusText  = 'Tight — leave in ' + gap + ' minutes';
+      } else {
+        statusClass = 'good';
+        statusText  = 'You have ' + gap + ' minutes before you need to leave';
+      }
+
+      var arriveLabel = buffer > 0
+        ? fmtTime(arrivalMins) + ' (' + buffer + ' mins early)'
+        : fmtTime(arrivalMins);
+
+      document.getElementById('legs').innerHTML = legsHtml;
+      document.getElementById('lt-time').textContent = fmtTime(leaveMins);
+      document.getElementById('summary-rows').innerHTML =
+        '<div class="sum-row"><span class="sum-label">Departure time</span><span class="sum-val">' + depStr + '</span></div>' +
+        '<div class="sum-row"><span class="sum-label">Arrive by</span><span class="sum-val">' + arriveLabel + '</span></div>' +
+        '<div class="sum-row"><span class="sum-label">Total journey</span><span class="sum-val">' + totalMins + ' mins</span></div>';
+
+      var sb = document.getElementById('status-bar');
+      sb.textContent = statusText;
+      sb.className = 'status ' + statusClass;
+      document.getElementById('results').classList.add('show');
+
+      // Start live countdown
+      updateCountdown();
+      countdownTimer = setInterval(updateCountdown, 1000);
+
+      saveState();
+
+    } catch(e) {
+      errEl.textContent = e.message;
+      errEl.style.display = 'block';
+    }
+
+    btn.innerHTML = 'Work out when to leave';
+    btn.disabled = false;
+  });
+
+  // ── Restore saved inputs on load ─────────────────────────────────────────
+  loadState();
+</script>
+</body>
+</html>
