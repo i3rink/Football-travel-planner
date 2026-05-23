@@ -276,17 +276,7 @@
   .countdown-display.urgent { color: #ff6b6b; }
   .countdown-display.gone { color: #ff6b6b; }
 
-  .status {
-    text-align: center;
-    padding: 10px 14px;
-    border-radius: 8px;
-    margin-top: 10px;
-    font-size: 14px;
-    font-weight: 600;
-  }
-  .status.good { background: var(--yellow-light); color: #7a6000; }
-  .status.tight { background: var(--amber-bg); color: var(--amber); }
-  .status.late { background: var(--red-bg); color: var(--red); }
+
 
   .spinner {
     display: inline-block;
@@ -324,7 +314,7 @@
         <input type="text" id="home" placeholder="e.g. KA3 1AA" />
       </div>
       <div class="field">
-        <label>Departure time</label>
+        <label>Arrival time</label>
         <input type="time" id="departure" value="19:00" />
       </div>
     </div>
@@ -378,7 +368,7 @@
     <div class="card" style="margin-top:10px">
       <div class="summary-rows" id="summary-rows"></div>
     </div>
-    <div class="status" id="status-bar"></div>
+
     <button class="btn-secondary" id="clear-btn">Clear saved journey</button>
   </div>
 
@@ -583,18 +573,6 @@
       var nowMins = now.getHours() * 60 + now.getMinutes();
       var gap     = Math.round(leaveMins - nowMins);
 
-      var statusClass, statusText;
-      if (gap < 0) {
-        statusClass = 'late';
-        statusText  = 'You should have left ' + Math.abs(gap) + ' minutes ago — get moving!';
-      } else if (gap < 20) {
-        statusClass = 'tight';
-        statusText  = 'Tight — leave in ' + gap + ' minutes';
-      } else {
-        statusClass = 'good';
-        statusText  = 'You have ' + gap + ' minutes before you need to leave';
-      }
-
       var arriveLabel = buffer > 0
         ? fmtTime(arrivalMins) + ' (' + buffer + ' mins early)'
         : fmtTime(arrivalMins);
@@ -602,13 +580,11 @@
       document.getElementById('legs').innerHTML = legsHtml;
       document.getElementById('lt-time').textContent = fmtTime(leaveMins);
       document.getElementById('summary-rows').innerHTML =
-        '<div class="sum-row"><span class="sum-label">Departure time</span><span class="sum-val">' + depStr + '</span></div>' +
+        '<div class="sum-row"><span class="sum-label">Arrival time</span><span class="sum-val">' + depStr + '</span></div>' +
         '<div class="sum-row"><span class="sum-label">Arrive by</span><span class="sum-val">' + arriveLabel + '</span></div>' +
         '<div class="sum-row"><span class="sum-label">Total journey</span><span class="sum-val">' + totalMins + ' mins</span></div>';
 
-      var sb = document.getElementById('status-bar');
-      sb.textContent = statusText;
-      sb.className = 'status ' + statusClass;
+
       document.getElementById('results').classList.add('show');
 
       // Start live countdown
